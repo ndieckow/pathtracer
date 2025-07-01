@@ -4,9 +4,9 @@ use crate::types::Float;
 
 #[derive(Copy, Clone, Debug)]
 pub struct Vec3 {
-    x: Float,
-    y: Float,
-    z: Float,
+    pub x: Float,
+    pub y: Float,
+    pub z: Float,
 }
 
 impl Vec3 {
@@ -14,8 +14,16 @@ impl Vec3 {
         Self { x, y, z }
     }
 
+    pub fn dot(&self, other: &Vec3) -> Float {
+        self.x * other.x + self.y * other.y * self.z * other.z
+    }
+
+    pub fn norm_sq(&self) -> Float {
+        self.dot(self)
+    }
+
     pub fn norm(&self) -> Float {
-        (self.x * self.x + self.y * self.y + self.z * self.z).sqrt()
+        self.norm_sq().sqrt()
     }
 }
 
