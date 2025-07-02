@@ -40,7 +40,7 @@ path_tracer/
 **Milestone Output:** A simple raytraced scene with colored spheres.
 
 ### 2. 🪞 Simple Whitted-style Ray Tracer
-- [ ] Implement ray-object intersections.
+- [x] Implement ray-object intersections.
 - [ ] Support Lambertian shading, shadows, and reflections.
 - [x] Build basic material system using traits.
 - [ ] Add support for point lights or area lights.
@@ -83,7 +83,7 @@ Can I finish everything within 24 work hours?
 |------|-------|---------|
 | 2025/06/15 | 1 | Initialization; `Vec3`
 | 2025/07/01 | 1 | Image rendering, `Ray`, `Sphere`
-| 2025/07/02 | 4 | `Camera`, First render, `Material`, `Lambertian`
+| 2025/07/02 | 5 | `Camera`, First render, `Material`, `Lambertian`
 
 ## Current render
 ![](img/output.png)

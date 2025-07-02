@@ -7,13 +7,14 @@ use std::sync::Arc;
 
 use image::{Rgb, RgbImage};
 
-use math::Vec3;
+use math::{Vec3, Ray};
 use scene::{Camera, HitRecord, Object, Sphere};
 use scene::material::{Material, Lambertian};
 use types::Float;
 
 const WIDTH: usize = 600;
 const HEIGHT: usize = 600;
+const SAMPLES_PER_PIXEL: u32 = 50;
 
 fn vec3_to_rgb(color: &Vec3) -> Rgb<u8> {
     let r = (color.x.clamp(0.0, 1.0).powf(1.0 / 2.2) * 255.0) as u8;
@@ -36,6 +37,37 @@ fn render_to_image(framebuffer: &Vec<Vec3>) -> RgbImage {
     img
 }
 
+fn trace_ray(ray: &Ray, objects: &Vec<Box<dyn Object>>, depth: u32) -> Vec3 {
+    if depth == 0 {
+        return Vec3::zeros();
+    }
+
+    let mut closest_hit: Option<HitRecord> = None;
+    let mut closest_t: Float = Float::INFINITY;
+
+    for obj in objects.iter() {
+        if let Some(hit) = obj.ray_intersection(ray) {
+            if hit.t < closest_t {
+                closest_t = hit.t;
+                closest_hit = Some(hit);
+            }
+        }
+    }
+
+    if let Some(hit) = closest_hit {
+        if let Some((out_ray, col)) = hit.material.scatter(ray, &hit) {
+            return col * trace_ray(&out_ray, objects, depth - 1);
+        } else {
+            return Vec3::zeros();
+        }
+    }
+
+    // Background gradient
+    let unit_dir = ray.direction.normalize();
+    let t = 0.5 * (unit_dir.y + 1.0);
+    Vec3::lerp(Vec3::new(1.0, 1.0, 1.0), Vec3::new(0.5, 0.0, 0.2), t)
+}
+
 fn render_scene(objects: &Vec<Box<dyn Object>>, camera: &Camera, framebuffer: &mut Vec<Vec3>) {
     for y in 0..HEIGHT {
         for x in 0..WIDTH {
@@ -45,15 +77,11 @@ fn render_scene(objects: &Vec<Box<dyn Object>>, camera: &Camera, framebuffer: &m
                 (y as Float) / (HEIGHT as Float),
                 1.0,
             );
-            for obj in objects.iter() {
-                match obj.ray_intersection(&ray) {
-                    None => continue,
-                    Some(hit) => {
-                        obj.material().scatter(&ray, &hit); // TODO
-                        framebuffer[index].x = 1.0;
-                    }
-                }
+            let mut color = Vec3::zeros();
+            for _ in 0..SAMPLES_PER_PIXEL {
+                color += trace_ray(&ray, objects, 5);
             }
+            framebuffer[index] = color / SAMPLES_PER_PIXEL as Float;
         }
     }
 }

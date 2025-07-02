@@ -1,4 +1,4 @@
-use std::ops::{Add, Div, Mul, Neg, Sub};
+use std::ops::{Add, AddAssign, Div, Mul, Neg, Sub};
 
 use rand_distr::{Distribution, Normal, NormalError};
 //use rand;
@@ -26,6 +26,18 @@ impl Vec3 {
             z: normal.sample(&mut rng),
         }
         .normalize())
+    }
+
+    pub fn zeros() -> Self {
+        Vec3 {
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+        }
+    }
+
+    pub fn lerp(a: Self, b: Self, t: Float) -> Self {
+        a * (1.0 - t) + b * t
     }
 
     pub fn dot(&self, other: &Self) -> Float {
@@ -65,6 +77,14 @@ impl Add for Vec3 {
     }
 }
 
+impl AddAssign for Vec3 {
+    fn add_assign(&mut self, other: Self) -> () {
+        self.x += other.x;
+        self.y += other.y;
+        self.z += other.z;
+    }
+}
+
 impl Sub for Vec3 {
     type Output = Self;
 
@@ -89,19 +109,17 @@ impl Neg for Vec3 {
     }
 }
 
-/*
 impl Mul for Vec3 {
     type Output = Self;
 
     fn mul(self, other: Self) -> Self {
         Self {
-            x: self.y * other.z - self.z * other.y,
-            y: self.z * other.x - self.x * other.z,
-            z: self.x * other.y - self.y * other.x,
+            x: self.x * other.x,
+            y: self.y * other.y,
+            z: self.z * other.z,
         }
     }
 }
-    */
 
 impl Mul<Float> for Vec3 {
     type Output = Self;
