@@ -1,17 +1,30 @@
+use std::sync::Arc;
+
 use crate::math::{Ray, Vec3};
 use crate::types::Float;
+use super::Material;
+
+pub struct HitRecord {
+    pub t: Float,
+    pub point: Vec3,
+    pub normal: Vec3,
+    pub material: Arc<dyn Material + Send + Sync>,
+}
+
+pub trait Object {
+    fn ray_intersection(&self, ray: &Ray) -> Option<HitRecord>;
+
+    fn material(&self) -> Arc<dyn Material + Send + Sync>;
+}
 
 pub struct Sphere {
     pub center: Vec3,
     pub radius: Float,
+    pub material: Arc<dyn Material + Send + Sync>,
 }
 
-impl Sphere {
-    pub fn new(center: Vec3, radius: Float) -> Self {
-        Self { center, radius }
-    }
-
-    pub fn ray_intersection(&self, ray: &Ray) -> Option<Float> {
+impl Object for Sphere {
+    fn ray_intersection(&self, ray: &Ray) -> Option<HitRecord> {
         let oc = ray.origin - self.center;
 
         let a = ray.direction.norm_sq();
@@ -33,8 +46,14 @@ impl Sphere {
             } else {
                 return None;
             };
-
-            Some(t)
+            
+            let point = ray.at(t);
+            let normal = (point - self.center).normalize();
+            Some(HitRecord { t, point, normal, material: Arc::clone(&self.material) })
         }
+    }
+
+    fn material(&self) -> Arc<dyn Material + Send + Sync> {
+        Arc::clone(&self.material)
     }
 }

@@ -1,4 +1,7 @@
-use std::ops::{Add, Div, Mul, Sub, Neg};
+use std::ops::{Add, Div, Mul, Neg, Sub};
+
+use rand_distr::{Distribution, Normal, NormalError};
+//use rand;
 
 use crate::types::Float;
 
@@ -12,6 +15,17 @@ pub struct Vec3 {
 impl Vec3 {
     pub fn new(x: Float, y: Float, z: Float) -> Self {
         Self { x, y, z }
+    }
+
+    pub fn random() -> Result<Self, NormalError> {
+        let mut rng = rand::rng();
+        let normal = Normal::new(0.0, 1.0)?;
+        Ok(Self {
+            x: normal.sample(&mut rng),
+            y: normal.sample(&mut rng),
+            z: normal.sample(&mut rng),
+        }
+        .normalize())
     }
 
     pub fn dot(&self, other: &Self) -> Float {

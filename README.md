@@ -34,7 +34,7 @@ path_tracer/
 - [x] Set up a Rust project with cargo init.
 - [x] Implement a simple Vec3 type.
 - [x] Define a Ray type.
-- [ ] Implement basic scene description: a few spheres and a camera.
+- [x] Implement basic scene description: a few spheres and a camera.
 - [x] Output image as .ppm or use image crate for .png.
 
 **Milestone Output:** A simple raytraced scene with colored spheres.
@@ -42,7 +42,7 @@ path_tracer/
 ### 2. 🪞 Simple Whitted-style Ray Tracer
 - [ ] Implement ray-object intersections.
 - [ ] Support Lambertian shading, shadows, and reflections.
-- [ ] Build basic material system using traits.
+- [x] Build basic material system using traits.
 - [ ] Add support for point lights or area lights.
 
 **Milestone Output:** Shiny balls with shadows and reflections.
@@ -83,7 +83,7 @@ Can I finish everything within 24 work hours?
 |------|-------|---------|
 | 2025/06/15 | 1 | Initialization; `Vec3`
 | 2025/07/01 | 1 | Image rendering, `Ray`, `Sphere`
-| 2025/07/02 | 2 | `Camera`, First render
+| 2025/07/02 | 4 | `Camera`, First render, `Material`, `Lambertian`
 
 ## Current render
-![]("output.png")
+![](img/output.png)
