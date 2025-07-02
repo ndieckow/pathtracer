@@ -86,4 +86,4 @@ Can I finish everything within 24 work hours?
 | 2025/07/02 | 5 | `Camera`, First render, `Material`, `Lambertian`
 
 ## Current render
-![](img/output.png)
+![](output.png)
