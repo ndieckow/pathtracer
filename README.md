@@ -78,7 +78,12 @@ path_tracer/
 
 
 ## Work hours
+Can I finish everything within 24 work hours?
 | Date | Hours | Changes |
 |------|-------|---------|
 | 2025/06/15 | 1 | Initialization; `Vec3`
 | 2025/07/01 | 1 | Image rendering, `Ray`, `Sphere`
+| 2025/07/02 | 2 | `Camera`, First render
+
+## Current render
+![]("output.png")
