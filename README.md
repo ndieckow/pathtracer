@@ -48,10 +48,10 @@ path_tracer/
 **Milestone Output:** Shiny balls with shadows and reflections.
 
 ### 3. 🔁 Monte Carlo Path Tracing Core
-- [ ] Implement cosine-weighted hemisphere sampling.
+- [x] Implement cosine-weighted hemisphere sampling.
 - [ ] Basic path tracing integrator.
 - [ ] Russian Roulette for recursion termination.
-- [ ] Add emissive surfaces for lighting (area lights).
+- [x] Add emissive surfaces for lighting (area lights).
 
 **Milestone Output:** Global illumination with soft shadows and indirect light.
 
@@ -84,6 +84,7 @@ Can I finish everything within 24 work hours?
 | 2025/06/15 | 1 | Initialization; `Vec3`
 | 2025/07/01 | 1 | Image rendering, `Ray`, `Sphere`
 | 2025/07/02 | 5 | `Camera`, First render, `Material`, `Lambertian`
+| 2025/07/03 | 1 | `Emissive`, cosine-weighted hemisphere sampling
 
 ## Current render
 ![](output.png)

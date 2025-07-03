@@ -9,12 +9,12 @@ use image::{Rgb, RgbImage};
 
 use math::{Vec3, Ray};
 use scene::{Camera, HitRecord, Object, Sphere};
-use scene::material::{Material, Lambertian};
+use scene::material::{Lambertian, Emissive};
 use types::Float;
 
 const WIDTH: usize = 600;
 const HEIGHT: usize = 600;
-const SAMPLES_PER_PIXEL: u32 = 50;
+const SAMPLES_PER_PIXEL: u32 = 200;
 
 fn vec3_to_rgb(color: &Vec3) -> Rgb<u8> {
     let r = (color.x.clamp(0.0, 1.0).powf(1.0 / 2.2) * 255.0) as u8;
@@ -55,17 +55,20 @@ fn trace_ray(ray: &Ray, objects: &Vec<Box<dyn Object>>, depth: u32) -> Vec3 {
     }
 
     if let Some(hit) = closest_hit {
+        let emitted = hit.material.emitted(ray, &hit);
+
         if let Some((out_ray, col)) = hit.material.scatter(ray, &hit) {
-            return col * trace_ray(&out_ray, objects, depth - 1);
+            return emitted + col * trace_ray(&out_ray, objects, depth - 1);
         } else {
-            return Vec3::zeros();
+            return emitted;
         }
     }
 
     // Background gradient
-    let unit_dir = ray.direction.normalize();
-    let t = 0.5 * (unit_dir.y + 1.0);
-    Vec3::lerp(Vec3::new(1.0, 1.0, 1.0), Vec3::new(0.5, 0.0, 0.2), t)
+    //let unit_dir = ray.direction.normalize();
+    //let t = 0.5 * (unit_dir.y + 1.0);
+    //Vec3::lerp(Vec3::new(1.0, 1.0, 1.0), Vec3::new(0.5, 0.0, 0.2), t)
+    Vec3::new(0.02, 0.02, 0.02)
 }
 
 fn render_scene(objects: &Vec<Box<dyn Object>>, camera: &Camera, framebuffer: &mut Vec<Vec3>) {
@@ -79,7 +82,7 @@ fn render_scene(objects: &Vec<Box<dyn Object>>, camera: &Camera, framebuffer: &m
             );
             let mut color = Vec3::zeros();
             for _ in 0..SAMPLES_PER_PIXEL {
-                color += trace_ray(&ray, objects, 5);
+                color += trace_ray(&ray, objects, 20);
             }
             framebuffer[index] = color / SAMPLES_PER_PIXEL as Float;
         }
@@ -91,19 +94,19 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let objects: Vec<Box<dyn Object>> = vec![
         Box::new(Sphere {
-            center: Vec3::new(2.0, 0.0, 2.0),
+            center: Vec3::new(1.0, 0.0, 2.0),
             radius: 0.5,
-            material: Arc::new(Lambertian { albedo: Vec3::new(1.0, 0.0, 0.0) }),
+            material: Arc::new(Lambertian { albedo: Vec3::new(0.0, 0.0, 1.0) }),
         }),
         Box::new(Sphere {
-            center: Vec3::new(0.0, 1.0, 2.0),
+            center: Vec3::new(0.0, -1.0, 2.0),
             radius: 1.0,
             material: Arc::new(Lambertian { albedo: Vec3::new(0.0, 1.0, 0.0) }),
         }),
         Box::new(Sphere {
-            center: Vec3::new(-1.0, 1.0, 4.0),
-            radius: 1.5,
-            material: Arc::new(Lambertian { albedo: Vec3::new(0.0, 0.0, 1.0) }),
+            center: Vec3::new(-0.5, 1.0, -0.5),
+            radius: 0.5,
+            material: Arc::new(Emissive { emitted_color: Vec3::new(2.0, 2.0, 2.0) }),
         }),
     ];
     let camera = Camera::new(Vec3::new(0.0, 0.0, 0.0), Vec3::new(0.0, 0.0, 1.0), 90.0);

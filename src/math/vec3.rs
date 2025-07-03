@@ -1,7 +1,10 @@
-use std::ops::{Add, AddAssign, Div, Mul, Neg, Sub};
+use std::{
+    f32::consts::PI,
+    ops::{Add, AddAssign, Div, Mul, Neg, Sub},
+};
 
+use rand::Rng;
 use rand_distr::{Distribution, Normal, NormalError};
-//use rand;
 
 use crate::types::Float;
 
@@ -28,12 +31,37 @@ impl Vec3 {
         .normalize())
     }
 
+    pub fn rand_hemisphere() -> Self {
+        let mut rng = rand::rng();
+        let z = rng.random_range(0.0..1.0);
+        let r = Float::max(0.0, 1.0 - z * z).sqrt();
+        let phi = 2.0 * PI * rng.random_range(0.0..1.0);
+
+        Self {
+            x: r * phi.cos(),
+            y: r * phi.sin(),
+            z,
+        }
+    }
+
     pub fn zeros() -> Self {
         Vec3 {
             x: 0.0,
             y: 0.0,
             z: 0.0,
         }
+    }
+
+    pub fn extend_to_onb(&self) -> (Self, Self) {
+        let a = if self.x.abs() > 0.9 {
+            Vec3::new(0.0, 1.0, 0.0)
+        } else {
+            Vec3::new(1.0, 0.0, 0.0)
+        };
+
+        let tangent = self.cross(&a).normalize();
+        let bitangent = self.cross(&tangent);
+        (tangent, bitangent)
     }
 
     pub fn lerp(a: Self, b: Self, t: Float) -> Self {
