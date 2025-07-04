@@ -31,10 +31,27 @@ impl Vec3 {
         .normalize())
     }
 
+    pub fn rand_disk() -> Self {
+        let mut rng = rand::rng();
+        let u_offset = rng.random_range(-1.0..1.0);
+        let v_offset = rng.random_range(-1.0..1.0);
+        if u_offset == 0.0 && v_offset == 0.0 {
+            return Self::zeros();
+        }
+
+        let (theta, r) = if Float::abs(u_offset) > Float::abs(v_offset) {
+            (PI / 4.0 * (v_offset / u_offset), u_offset)
+        } else {
+            (PI / 2.0 - PI / 4.0 * (u_offset / v_offset), v_offset)
+        };
+
+        r * Self::new(theta.cos(), theta.sin(), 0.0)
+    }
+
     pub fn rand_hemisphere() -> Self {
         let mut rng = rand::rng();
         let z = rng.random_range(0.0..1.0);
-        let r = Float::max(0.0, 1.0 - z * z).sqrt();
+        let r = ((1.0 - z * z) as Float).sqrt();
         let phi = 2.0 * PI * rng.random_range(0.0..1.0);
 
         Self {
@@ -42,6 +59,12 @@ impl Vec3 {
             y: r * phi.sin(),
             z,
         }
+    }
+
+    pub fn rand_hemisphere_cosine() -> Self {
+        let d = Self::rand_disk();
+        let z = Float::max(0.0, 1.0 - d.x * d.x - d.y * d.y).sqrt();
+        Self { x: d.x, y: d.y, z }
     }
 
     pub fn zeros() -> Self {

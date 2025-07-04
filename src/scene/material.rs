@@ -14,7 +14,7 @@ pub struct Lambertian {
 
 impl Material for Lambertian {
     fn scatter(&self, ray: &Ray, hit: &HitRecord) -> Option<(Ray, Vec3)> {
-        let local_dir = Vec3::rand_hemisphere();
+        let local_dir = Vec3::rand_hemisphere_cosine();
         let (tangent, bitangent) = hit.normal.extend_to_onb();
         let world_dir = tangent * local_dir.x + bitangent * local_dir.y + hit.normal * local_dir.z; // TODO: express as matrix-vector multiply
 

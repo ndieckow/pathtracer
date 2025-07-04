@@ -85,6 +85,7 @@ Can I finish everything within 24 work hours?
 | 2025/07/01 | 1 | Image rendering, `Ray`, `Sphere`
 | 2025/07/02 | 5 | `Camera`, First render, `Material`, `Lambertian`
 | 2025/07/03 | 1 | `Emissive`, cosine-weighted hemisphere sampling
+| 2025/07/04 | 1 | `Plane` (or Circle for now), fixed cosine-weighted hemisphere sampling
 
 ## Current render
 ![](output.png)

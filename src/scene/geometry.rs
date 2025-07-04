@@ -1,8 +1,8 @@
 use std::sync::Arc;
 
+use super::Material;
 use crate::math::{Ray, Vec3};
 use crate::types::Float;
-use super::Material;
 
 pub struct HitRecord {
     pub t: Float,
@@ -30,7 +30,7 @@ impl Object for Sphere {
         let a = ray.direction.norm_sq();
         let b = 2.0 * ray.direction.dot(&oc);
         let c = oc.norm_sq() - self.radius * self.radius;
-        
+
         let discriminant = b * b - 4.0 * a * c;
 
         if discriminant < 0.0 {
@@ -46,10 +46,49 @@ impl Object for Sphere {
             } else {
                 return None;
             };
-            
+
             let point = ray.at(t);
             let normal = (point - self.center).normalize();
-            Some(HitRecord { t, point, normal, material: Arc::clone(&self.material) })
+            Some(HitRecord {
+                t,
+                point,
+                normal,
+                material: Arc::clone(&self.material),
+            })
+        }
+    }
+
+    fn material(&self) -> Arc<dyn Material + Send + Sync> {
+        Arc::clone(&self.material)
+    }
+}
+
+pub struct Plane {
+    pub center: Vec3,
+    pub normal: Vec3,
+    pub size: Float, // negative means infinite
+    pub material: Arc<dyn Material + Send + Sync>,
+}
+
+impl Object for Plane {
+    fn ray_intersection(&self, ray: &Ray) -> Option<HitRecord> {
+        let d_dot_n = ray.direction.dot(&self.normal);
+        let c_minus_o_dot_n = (self.center - ray.origin).dot(&self.normal);
+        if d_dot_n == 0.0 || d_dot_n.signum() != c_minus_o_dot_n.signum() {
+            return None;
+        }
+        let t = c_minus_o_dot_n / d_dot_n;
+        let hit_point = ray.at(t);
+
+        if (hit_point - self.center).norm() <= self.size {
+            Some(HitRecord {
+                t,
+                point: hit_point,
+                normal: self.normal,
+                material: Arc::clone(&self.material),
+            })
+        } else {
+            None
         }
     }
 
