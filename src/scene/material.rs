@@ -3,7 +3,7 @@ use crate::math::{Ray, Vec3};
 
 pub trait Material {
     fn scatter(&self, ray: &Ray, hit: &HitRecord) -> Option<(Ray, Vec3)>;
-    fn emitted(&self, ray: &Ray, hit: &HitRecord) -> Vec3 {
+    fn emitted(&self, _ray: &Ray, _hit: &HitRecord) -> Vec3 {
         Vec3::zeros()
     }
 }
@@ -13,7 +13,7 @@ pub struct Lambertian {
 }
 
 impl Material for Lambertian {
-    fn scatter(&self, ray: &Ray, hit: &HitRecord) -> Option<(Ray, Vec3)> {
+    fn scatter(&self, _ray: &Ray, hit: &HitRecord) -> Option<(Ray, Vec3)> {
         let local_dir = Vec3::rand_hemisphere_cosine();
         let (tangent, bitangent) = hit.normal.extend_to_onb();
         let world_dir = tangent * local_dir.x + bitangent * local_dir.y + hit.normal * local_dir.z; // TODO: express as matrix-vector multiply
@@ -29,10 +29,11 @@ pub struct Emissive {
 }
 
 impl Material for Emissive {
-    fn scatter(&self, ray: &Ray, hit: &HitRecord) -> Option<(Ray, Vec3)> {
+    fn scatter(&self, _ray: &Ray, _hit: &HitRecord) -> Option<(Ray, Vec3)> {
         None
     }
-    fn emitted(&self, ray: &Ray, hit: &HitRecord) -> Vec3 {
+
+    fn emitted(&self, _ray: &Ray, _hit: &HitRecord) -> Vec3 {
         self.emitted_color
     }
 }

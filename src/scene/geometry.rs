@@ -72,19 +72,27 @@ pub struct Plane {
 
 impl Object for Plane {
     fn ray_intersection(&self, ray: &Ray) -> Option<HitRecord> {
-        let d_dot_n = ray.direction.dot(&self.normal);
-        let c_minus_o_dot_n = (self.center - ray.origin).dot(&self.normal);
-        if d_dot_n.abs() < 0.001 || d_dot_n.signum() != c_minus_o_dot_n.signum() {
+        let normal = self.normal.normalize();
+        let d_dot_n = ray.direction.dot(&normal);
+        let c_minus_o_dot_n = (self.center - ray.origin).dot(&normal);
+
+        if d_dot_n.abs() < 0.001 {
             return None;
         }
+
         let t = c_minus_o_dot_n / d_dot_n;
+
+        if t < ray.t_min || t > ray.t_max {
+            return None;
+        }
+
         let hit_point = ray.at(t);
 
-        if (hit_point - self.center).norm() <= self.size {
+        if (hit_point - self.center).abs().max() <= self.size {
             Some(HitRecord {
                 t,
                 point: hit_point,
-                normal: if d_dot_n < 0.0 { self.normal } else { -self.normal },
+                normal: if d_dot_n < 0.0 { normal } else { -normal },
                 material: Arc::clone(&self.material),
             })
         } else {

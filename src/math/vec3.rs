@@ -76,14 +76,14 @@ impl Vec3 {
     }
 
     pub fn extend_to_onb(&self) -> (Self, Self) {
-        let a = if self.x.abs() > 0.9 {
+        let a = if self.x.abs() > 0.99 {
             Vec3::new(0.0, 1.0, 0.0)
         } else {
             Vec3::new(1.0, 0.0, 0.0)
         };
 
         let tangent = self.cross(&a).normalize();
-        let bitangent = self.cross(&tangent);
+        let bitangent = tangent.cross(self);
         (tangent, bitangent)
     }
 
@@ -105,6 +105,22 @@ impl Vec3 {
 
     pub fn normalize(self) -> Self {
         self / self.norm()
+    }
+
+    pub fn min(&self) -> Float {
+        self.x.min(self.y).min(self.z)
+    }
+
+    pub fn max(&self) -> Float {
+        self.x.max(self.y).max(self.z)
+    }
+
+    pub fn abs(self) -> Self {
+        Self {
+            x: self.x.abs(),
+            y: self.y.abs(),
+            z: self.z.abs(),
+        }
     }
 
     pub fn cross(&self, other: &Self) -> Self {
@@ -129,7 +145,7 @@ impl Add for Vec3 {
 }
 
 impl AddAssign for Vec3 {
-    fn add_assign(&mut self, other: Self) -> () {
+    fn add_assign(&mut self, other: Self) {
         self.x += other.x;
         self.y += other.y;
         self.z += other.z;
