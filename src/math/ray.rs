@@ -2,7 +2,7 @@ use super::Vec3;
 
 use crate::types::Float;
 
-const EPSILON: Float = 1e-4;
+const EPSILON: Float = 1e-3;
 
 #[derive(Copy, Clone, Debug)]
 pub struct Ray {

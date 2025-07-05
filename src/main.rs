@@ -7,7 +7,7 @@ use std::sync::Arc;
 
 use image::{Rgb, RgbImage};
 
-use rand::Rng;
+use rand;
 
 use math::{Ray, Vec3};
 use scene::material::{Emissive, Lambertian};
@@ -121,11 +121,11 @@ fn main() -> Result<(), Box<dyn Error>> {
             }),
         }),
         Box::new(Plane {
-            center: Vec3::new(0.0, -1.0, 10.0),
-            normal: Vec3::new(0.0, 1.0, -0.3),
+            center: Vec3::new(0.0, -1.0, 5.0),
+            normal: Vec3::new(0.0, 1.0, 0.0),
             size: 10.0,
             material: Arc::new(Lambertian {
-                albedo: Vec3::new(1.0, 1.0, 1.0),
+                albedo: Vec3::new(0.2, 0.2, 0.2),
             }),
         }),
     ];
