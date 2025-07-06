@@ -69,7 +69,7 @@ fn trace_ray(ray: &Ray, objects: &Vec<Box<dyn Object>>, depth: u32) -> Vec3 {
     //let unit_dir = ray.direction.normalize();
     //let t = 0.5 * (unit_dir.y + 1.0);
     //Vec3::lerp(Vec3::new(1.0, 1.0, 1.0), Vec3::new(0.5, 0.0, 0.2), t)
-    Vec3::new(0.2, 0.2, 0.2)
+    Vec3::new(0.0, 0.0, 0.0)
 }
 
 fn render_scene(objects: &Vec<Box<dyn Object>>, camera: &Camera, framebuffer: &mut [Vec3]) {
@@ -78,14 +78,14 @@ fn render_scene(objects: &Vec<Box<dyn Object>>, camera: &Camera, framebuffer: &m
             let index = y * WIDTH + x;
             let mut color = Vec3::zeros();
             for _ in 0..SAMPLES_PER_PIXEL {
-                let jitter_x = rand::random_range(-0.5..0.5);
-                let jitter_y = rand::random_range(-0.5..0.5);
+                let jitter_x = rand::random_range(-0.2..0.2);
+                let jitter_y = rand::random_range(-0.2..0.2);
 
                 let ray = camera.get_ray(
                     (x as Float + jitter_x) / (WIDTH as Float),
                     (y as Float + jitter_y) / (HEIGHT as Float),
                 );
-                color += trace_ray(&ray, objects, 20);
+                color += trace_ray(&ray, objects, 50);
             }
             framebuffer[index] = color / SAMPLES_PER_PIXEL as Float;
             //framebuffer[index] = 0.5 * (scatter_dir.normalize() + Vec3::new(1.0, 1.0, 1.0));
@@ -105,6 +105,14 @@ fn main() -> Result<(), Box<dyn Error>> {
                 emitted_color: Vec3::new(1.0, 1.0, 1.0),
             }),
         }),
+        Box::new(Plane { // front wall (invisible)
+            center: Vec3::new(0.0, 0.0, -1.0),
+            normal: Vec3::new(0.0, 0.0, 1.0),
+            size: 1.0,
+            material: Arc::new(Lambertian {
+                albedo: Vec3::new(1.0, 1.0, 1.0),
+            }),
+        }),
         Box::new(Plane { // back wall
             center: Vec3::new(0.0, 0.0, 3.0),
             normal: Vec3::new(0.0, 0.0, -1.0),
@@ -114,42 +122,42 @@ fn main() -> Result<(), Box<dyn Error>> {
             }),
         }),
         Box::new(Plane { // floor
-            center: Vec3::new(0.0, -1.0, 2.0),
+            center: Vec3::new(0.0, -1.0, 1.0),
             normal: Vec3::new(0.0, 1.0, 0.0),
-            size: 1.0,
+            size: 2.0,
             material: Arc::new(Lambertian {
                 albedo: Vec3::new(1.0, 1.0, 1.0),
             }),
         }),
         Box::new(Plane { // ceiling
-            center: Vec3::new(0.0, 1.0, 2.0),
+            center: Vec3::new(0.0, 1.0, 1.0),
             normal: Vec3::new(0.0, -1.0, 0.0),
-            size: 1.0,
+            size: 2.0,
             material: Arc::new(Lambertian {
                 albedo: Vec3::new(1.0, 1.0, 1.0),
             }),
         }),
         Box::new(Plane { // right, green wall
-            center: Vec3::new(1.0, 0.0, 2.0),
+            center: Vec3::new(1.0, 0.0, 1.0),
             normal: Vec3::new(-1.0, 0.0, 0.0),
-            size: 1.0,
+            size: 2.0,
             material: Arc::new(Lambertian {
                 albedo: Vec3::new(0.0, 1.0, 0.0),
             }),
         }),
         Box::new(Plane { // left, red wall
-            center: Vec3::new(-1.0, 0.0, 2.0),
+            center: Vec3::new(-1.0, 0.0, 1.0),
             normal: Vec3::new(1.0, 0.0, 0.0),
-            size: 1.0,
+            size: 2.0,
             material: Arc::new(Lambertian {
                 albedo: Vec3::new(1.0, 0.0, 0.0),
             }),
         }),
         Box::new(Sphere {
-            center: Vec3::new(-0.2, -0.7, 2.0),
+            center: Vec3::new(-0.2, 0.0, 2.3),
             radius: 0.3,
             material: Arc::new(Lambertian {
-                albedo: Vec3::new(0.0, 0.0, 1.0),
+                albedo: Vec3::new(1.0, 0.0, 1.0),
             }),
         }),
     ];
